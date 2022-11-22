@@ -1,24 +1,28 @@
+import os
 import easier as ezr
 import ibis
 
-
 def get_postgres_creds(name):
+    allowed_names = [
+        'production',
+        'analytics'
+    ]
     if name == 'production':
         kwargs = {
-            'host': 'PGHOSTPRODUCTION',
-            'user': 'PGUSERPRODUCTION',
-            'password': 'PGPASSWORDPRODUCTION',
-            'dbname': 'PGDATABASEPRODUCTION'            
+            'host': os.environ['PGHOSTPRODUCTION'],
+            'user': os.environ['PGUSERPRODUCTION'],
+            'password': os.environ['PGPASSWORDPRODUCTION'],
+            'dbname': os.environ['PGDATABASEPRODUCTION']            
         }
     elif name == 'analytics':
         kwargs = {
-            'host': 'PGHOSTANALYTICS',
-            'user': 'PGUSERANALYTICS',
-            'password': 'PGPASSWORDANALYTICS',
-            'dbname': 'PGDATABASEANALYTICS'            
+            'host': os.environ['PGHOSTANALYTICS'],
+            'user': os.environ['PGUSERANALYTICS'],
+            'password': os.environ['PGPASSWORDANALYTICS'],
+            'dbname': os.environ['PGDATABASEANALYTICS']            
         }
     else:
-        raise ValueError(f'{name} not a valid database designator')
+        raise ValueError(f'{name} not in {allowed_names}')
     return kwargs
 
 
@@ -33,7 +37,6 @@ def get_postgres_ibis_connection(name):
     kwargs['database'] = kwargs.pop('dbname')
     conn = ibis.postgres.connect(**kwargs)
     return conn
-
 
 
 def create_postgres_functions():
