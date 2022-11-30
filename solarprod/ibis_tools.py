@@ -4,7 +4,6 @@ import pandas as pd
 import ibis
 from . import postgres_tools as pgtools
 
-EARLIEST_DATE = pd.Timestamp('1/1/2020')
 PRODUCTION_CONN_NAME = 'production'
 ANALYITICS_CONN_NAME = 'analytics'
 LOCAL_CONN_NAME = 'local'
