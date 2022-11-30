@@ -2,7 +2,6 @@ import contextlib
 import os
 import pandas as pd
 import ibis
-from ibis import _
 from . import postgres_tools as pgtools
 
 EARLIEST_DATE = pd.Timestamp('1/1/2020')
