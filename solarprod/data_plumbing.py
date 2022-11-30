@@ -8,15 +8,17 @@ import pandas as pd
 import ibis
 from ibis import _
 
-from .ibis_tools import (
-    get_connections,
+from .constants import (
     LOCAL_CONN_NAME,
-    PRODUCTION_CONN_NAME
+    PRODUCTION_CONN_NAME,
+    EARLIEST_DATE,
+    MIN_NEIGHBOR_MILES,
+    MAX_NEIGHBOR_MILES
 )
 
-
-EARLIEST_DATE = pd.Timestamp('1/1/2020')
-MIN_NEIGHBOR_MILES, MAX_NEIGHBOR_MILES = .125, 50
+from .ibis_tools import (
+    get_connections,
+)
 
 
 def get_yesterday():

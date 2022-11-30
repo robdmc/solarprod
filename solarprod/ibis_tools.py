@@ -1,13 +1,14 @@
 import contextlib
 import os
-import pandas as pd
 import ibis
 from . import postgres_tools as pgtools
 
-PRODUCTION_CONN_NAME = 'production'
-ANALYITICS_CONN_NAME = 'analytics'
-LOCAL_CONN_NAME = 'local'
-LOCAL_DB_FILENAME = '/tmp/solar.ddb'
+from .constants import (
+    PRODUCTION_CONN_NAME,
+    ANALYITICS_CONN_NAME,
+    LOCAL_CONN_NAME,
+    LOCAL_DB_FILENAME,
+) 
 
 
 def get_local_connection(reset=False):
