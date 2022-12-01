@@ -16,6 +16,7 @@ from .utils import logged
 
 ezr.mute_warnings()
 
+
 def run_detector_pipeline(memory_friendly=True, show_progress_bar=False):
     """
     Syncs all data required to look for detections.
@@ -30,10 +31,10 @@ def run_detector_pipeline(memory_friendly=True, show_progress_bar=False):
 
     with logged('update_neighbors'):
         update_neighbors()
-    
+
     with logged('update_nominal_prod'):
         NominalProd().update_nominal_prod(show_progress_bar)
-    
+
     with logged('update_detections'):
         (
             Detector()
@@ -43,5 +44,3 @@ def run_detector_pipeline(memory_friendly=True, show_progress_bar=False):
 
     with logged('push_detections'):
         push_detections()
-                
-                

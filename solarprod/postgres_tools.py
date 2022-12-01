@@ -2,6 +2,7 @@ import os
 import easier as ezr
 import ibis
 
+
 def get_postgres_creds(name):
     allowed_names = [
         'production',
@@ -12,14 +13,14 @@ def get_postgres_creds(name):
             'host': os.environ['PGHOSTPRODUCTION'],
             'user': os.environ['PGUSERPRODUCTION'],
             'password': os.environ['PGPASSWORDPRODUCTION'],
-            'dbname': os.environ['PGDATABASEPRODUCTION']            
+            'dbname': os.environ['PGDATABASEPRODUCTION']
         }
     elif name == 'analytics':
         kwargs = {
             'host': os.environ['PGHOSTANALYTICS'],
             'user': os.environ['PGUSERANALYTICS'],
             'password': os.environ['PGPASSWORDANALYTICS'],
-            'dbname': os.environ['PGDATABASEANALYTICS']            
+            'dbname': os.environ['PGDATABASEANALYTICS']
         }
     else:
         raise ValueError(f'{name} not in {allowed_names}')
@@ -48,14 +49,14 @@ def create_postgres_functions():
 
     -------------------------------------------------------------------
     -------------------------------------------------------------------
-    CREATE OR REPLACE FUNCTION 
-        bodi_list_functions() 
+    CREATE OR REPLACE FUNCTION
+        bodi_list_functions()
 
-    RETURNS 
+    RETURNS
         table (
             function_schema varchar,
             function_name varchar
-        ) 
+        )
     LANGUAGE plpgsql
 
     AS $$
@@ -81,7 +82,7 @@ def create_postgres_functions():
         bodi_get_function_code(
             function_name varchar
         )
-        
+
     RETURNS
         table (
             code varchar
@@ -93,35 +94,34 @@ def create_postgres_functions():
 
         RETURN QUERY
             SELECT
-                routine_definition::varchar 
+                routine_definition::varchar
             FROM
-                information_schema.routines 
+                information_schema.routines
             WHERE
                 routine_name::varchar = function_name;
-        
+
     END;
     $$
-    """)    
+    """)
     pg.run()
-
 
     # Create a function that gets production history for homes.
     pg.query("""
         -------------------------------------------------------------------
         -------------------------------------------------------------------
-        CREATE OR REPLACE FUNCTION 
+        CREATE OR REPLACE FUNCTION
             bodi_get_raw_history(
                 starting timestamp,
                 ending timestamp,
                 production_threshold double precision
-            ) 
+            )
 
-        RETURNS 
+        RETURNS
             table (
                 homeowner_id integer,
                 date timestamp,
                 total_production double precision
-            ) 
+            )
         LANGUAGE plpgsql
 
         AS $$
@@ -150,20 +150,20 @@ def create_postgres_functions():
     pg.query("""
         -------------------------------------------------------------------
         -------------------------------------------------------------------
-        CREATE OR REPLACE FUNCTION 
+        CREATE OR REPLACE FUNCTION
             bodi_get_proximal_homeowners(
                 min_miles double precision,
                 max_miles double precision,
                 min_neighbors integer,
                 max_neighbors integer
-            ) 
-        RETURNS 
+            )
+        RETURNS
             table (
-            
+
                 homeowner_id1 integer,
                 homeowner_id2 integer,
                 distance_miles double precision
-            ) 
+            )
         LANGUAGE plpgsql
         AS $$
         BEGIN
@@ -172,11 +172,11 @@ def create_postgres_functions():
             -- Grab a table of all active homeowners
             --------------------------------------------------------------------------------------
             WITH raw AS (
-                SELECT 
+                SELECT
                     id,
                     (lat::NUMERIC) * PI() / 180 AS theta,
                     (lng::NUMERIC) * PI() / 180 AS phi
-                FROM 
+                FROM
                     homeowners
                 WHERE
                     "isDisable"=false
@@ -266,10 +266,7 @@ def create_postgres_functions():
                 valid_ids
             ON
                 closest_distances.id1 = valid_ids.id1
-                
-        ;END;$$;        
+
+        ;END;$$;
         """)
     pg.run()
-
-
-

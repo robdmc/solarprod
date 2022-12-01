@@ -30,7 +30,7 @@ def get_yesterday():
     today = fleming.floor(datetime.datetime.now(), day=1)
     yesterday = today - relativedelta(days=1)
     return yesterday
-    
+
 
 def get_start_date(connection_or_connection_name, table_name, default_start_date=EARLIEST_DATE):
     """
@@ -39,14 +39,14 @@ def get_start_date(connection_or_connection_name, table_name, default_start_date
     records in the table.
 
     Args:
-        connection_or_connection_name: Either the name of a connection or the connection itself 
+        connection_or_connection_name: Either the name of a connection or the connection itself
                                        that contains the table to be updated
                            table_name: The name of the table that will be updated
                    default_start_date: If no start date is found, return this date instead
     """
     # I never want to populate "today" because not everything for today has happened already
     yesterday = get_yesterday()
-    
+
     # create a utility function that knows how to get start date from a connection
     def extract_starting_from_table(conn):
         # If the table exists
@@ -56,30 +56,30 @@ def get_start_date(connection_or_connection_name, table_name, default_start_date
 
             # Get the latest date that was pushed
             last_pushed_date = table.date.max().execute()
-        
+
             # Set the start date to one day after the last pushed date
             start_date = last_pushed_date + relativedelta(days=1)
-    
+
             # If asking for a date after yesterday, no valid start date
             if start_date > yesterday:
                 start_date = None
-        
+
         # If the table doesn't exist, then must populate all
         else:
             start_date = default_start_date
-            
+
         return start_date
-        
-    # If a connection name was provided, get start date using that name        
+
+    # If a connection name was provided, get start date using that name
     if isinstance(connection_or_connection_name, str):
         # Get the connection the table lives in
         with get_connections(connection_or_connection_name) as conn:
             start_date = extract_starting_from_table(conn)
-    
-    # Otherwise a connection was provided.  Get the start date using the connection            
+
+    # Otherwise a connection was provided.  Get the start date using the connection
     else:
         start_date = extract_starting_from_table(connection_or_connection_name)
-    
+
     # Return the start date
     return start_date
 
@@ -116,13 +116,13 @@ def sync_prod_history(show_progress_bar=False, memory_friendly=True):
         memory_friendly: If set to True, will make one call to the production db for each day.
                          Otherwise, it will ram the entire history table into memeory at once.
     """
-    
+
     # Grab the databse connections
     with get_connections(PRODUCTION_CONN_NAME, LOCAL_CONN_NAME) as (production_conn, local_conn):
 
         # Don't want to do anything for today, since there is more that can still happen today
         yesterday = get_yesterday()
-    
+
         # I will ignore all production levels below this number
         prod_threshold = 10
 
@@ -137,7 +137,7 @@ def sync_prod_history(show_progress_bar=False, memory_friendly=True):
         hist = hist[hist.total_production > prod_threshold]
         hist = hist.sort_by(['date', 'homeowner_id'])
 
-        # Get a start date for syncing from the target db 
+        # Get a start date for syncing from the target db
         start_date = get_start_date(local_conn, table_to_populate)
 
         # If couldn't get valid start date, do nothing
@@ -192,7 +192,7 @@ def update_neighbors():
         homeowners = local_conn.table('homeowners')
         homeowners = homeowners.mutate(
             lat=_.lat * np.pi / 180,
-            lng= _.lng * np.pi / 180
+            lng=_.lng * np.pi / 180
         )
 
         # Make two copies of homeowners with different names
@@ -210,7 +210,7 @@ def update_neighbors():
         # Compute approximate dx, dy distances in miles.  We are only using this
         # to limit which homes we look at, so accurate distances are really not important
         neighbors = neighbors.mutate(
-            dy=r_earth_miles * (_.lat2 - _.lat1), 
+            dy=r_earth_miles * (_.lat2 - _.lat1),
             dx=r_earth_miles * _.lat1.cos() * (_.lng2 - _.lng1)
         )
 
@@ -267,11 +267,11 @@ def push_detections():
         start_date = get_start_date(ANALYITICS_CONN_NAME, 'detections')
         if start_date is None:
             return
-            
+
         detections = conn_local.table('detections')
         detections = detections[detections.date >= start_date]
         df = detections.execute()
         logger = ezr.get_logger('push_detections')
         logger.info(f'pushing {len(df)} detections')
         if not df.empty:
-            conn_analytics.insert('detections', df)        
+            conn_analytics.insert('detections', df)
