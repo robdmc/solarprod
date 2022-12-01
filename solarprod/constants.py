@@ -21,6 +21,3 @@ NEIGHBOR_COUNT_THRESH = 4
 NOMINAL_PROD_TABLE_NAME = 'nominal_prod'
 RAW_DETECTION_TABLE_NAME = 'raw_detections'
 DETECTION_TABLE_NAME = 'detections'
-
-
-i need to make sure the detector stuff constants are correctly used

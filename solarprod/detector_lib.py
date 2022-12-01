@@ -133,7 +133,7 @@ class NominalProd:
     
     def update_nominal_prod(self, show_progress_bar=False):
         # Get the start date and only proceed if it's valid
-        start_date = get_start_date(LOCAL_CONN_NAME, self.NOMINAL_PROD_TABLE_NAME)
+        start_date = get_start_date(LOCAL_CONN_NAME, NOMINAL_PROD_TABLE_NAME)
         if start_date is None:
             return
         

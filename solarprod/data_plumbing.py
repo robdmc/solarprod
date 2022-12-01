@@ -13,7 +13,8 @@ from .constants import (
     PRODUCTION_CONN_NAME,
     EARLIEST_DATE,
     MIN_NEIGHBOR_MILES,
-    MAX_NEIGHBOR_MILES
+    MAX_NEIGHBOR_MILES,
+    ANALYITICS_CONN_NAME,
 )
 
 from .ibis_tools import (
@@ -259,3 +260,18 @@ def get_unique_homes(start_date):
         hist = hist[['homeowner_id']].distinct()
         hist = hist.sort_by('homeowner_id')
         return list(hist.homeowner_id.execute())
+
+
+def push_detections():
+    with get_connections(LOCAL_CONN_NAME, ANALYITICS_CONN_NAME) as (conn_local, conn_analytics):
+        start_date = get_start_date(ANALYITICS_CONN_NAME, 'detections')
+        if start_date is None:
+            return
+            
+        detections = conn_local.table('detections')
+        detections = detections[detections.date >= start_date]
+        df = detections.execute()
+        logger = ezr.get_logger('push_detections')
+        logger.info(f'pushing {len(df)} detections')
+        if not df.empty:
+            conn_analytics.insert('detections', df)        
