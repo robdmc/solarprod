@@ -8,13 +8,13 @@ from .constants import (
     ANALYITICS_CONN_NAME,
     LOCAL_CONN_NAME,
     LOCAL_DB_FILENAME,
-) 
+)
 
 
 def get_local_connection(reset=False):
     """
     A function to get a connection to the local database
-    Args: 
+    Args:
         reset: if set to True, will blow away any existing database file
     """
     file_name = LOCAL_DB_FILENAME
@@ -40,26 +40,26 @@ def get_connections(*names):
     """
     # The allowed connection names are taken from global variables
     allowed_connections = [
-        PRODUCTION_CONN_NAME, 
-        LOCAL_CONN_NAME, 
+        PRODUCTION_CONN_NAME,
+        LOCAL_CONN_NAME,
         ANALYITICS_CONN_NAME
     ]
-    
+
     # Make sure all requested connections are valid
     bad_conns = set(names) - set(allowed_connections)
     if bad_conns:
         raise ValueError(f'valid connection names are {allowed_connections}')
-        
+
     # Define the connection getters for each name
     getter_dict = {
         PRODUCTION_CONN_NAME: lambda: pgtools.get_postgres_ibis_connection('production'),
         ANALYITICS_CONN_NAME: lambda: pgtools.get_postgres_ibis_connection('analytics'),
         LOCAL_CONN_NAME: lambda: get_local_connection()
     }
-    
+
     # Create all requested connections
     connections = [getter_dict[name]() for name in names]
-    
+
     # Yield in a try block to ensure all connections are disposed after use
     try:
         if len(connections) == 1:
