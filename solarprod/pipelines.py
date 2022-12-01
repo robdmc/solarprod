@@ -1,17 +1,20 @@
-from data_plumbing import (
+import easier as ezr
+
+from .data_plumbing import (
     sync_homeowners,
     sync_prod_history,
     update_neighbors,
     push_detections,
 )
 
-from detector_lib import (
+from .detector_lib import (
     NominalProd,
     Detector,
 )
 
-from utils import logged
+from .utils import logged
 
+ezr.mute_warnings()
 
 def run_detector_pipeline(memory_friendly=True, show_progress_bar=False):
     """
@@ -41,5 +44,4 @@ def run_detector_pipeline(memory_friendly=True, show_progress_bar=False):
     with logged('push_detections'):
         push_detections()
                 
-run_detector_pipeline(show_progress_bar=True)                
                 
