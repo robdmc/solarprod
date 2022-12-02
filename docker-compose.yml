@@ -1,0 +1,62 @@
+version: "3.9"
+services:
+  base: &base
+     image: "robdmc/solarprod"
+     build: .
+     env_file: variables.env
+     # secrets:
+     #   - app_secrets
+  shell:
+    <<: *base
+    #container_name: dapp
+    # ports:
+    #   - "8501:8501"
+    # volumes:
+    #   - ~/data:/root/data
+    #   - ./logs:/root/logs
+    #   - ./notebooks:/app/notebooks:delegated
+    command: /bin/bash
+      # bash 
+      # bash -c "source /run/secrets/app_secrets && bash"
+  #app:
+  #  <<: *base
+  #  ports:
+  #    - "8501:8501"
+  #  command: >
+  #    bash -c "source /run/secrets/app_secrets && streamlit run Summary.py"
+  #tasks:
+  #  <<: *base
+  #  volumes:
+  #    - ~/data:/root/data
+  #    - ./logs:/root/logs
+  #    - ./notebooks:/app/notebooks:delegated
+  #  command: >
+  #    bash -c "source /run/secrets/app_secrets && python task_runner.py > ~/logs/tasks.log 2>&1"
+  #tasks_daemon:
+  #  <<: *base
+  #  volumes:
+  #    - ~/data:/root/data
+  #    - ./logs:/root/logs
+  #    - ./notebooks:/app/notebooks:delegated
+  #  command: >
+  #    bash -c "source /run/secrets/app_secrets && python task_runner.py -d > ~/logs/tasks.log 2>&1"
+  #jupyter:
+  #  <<: *base
+  #  #container_name: jupyter
+  #  ports:
+  #    - "8888:8888"
+
+  #  volumes:
+  #    - ~/data:/root/data
+  #    - ./logs:/root/logs
+  #    - ./notebooks:/app/notebooks:delegated
+
+  #  command: >
+  #    bash -c "source /run/secrets/app_secrets && jupyter notebook --allow-root --port=8888 --no-browser --ip=0.0.0.0"
+#secrets:
+  #app_secrets:
+  #  file: ./secrets.sh
+
+
+## Run this to kill all build images
+## docker images | grep dashboard_ | awk '{print $3}' | xargs docker rmi
