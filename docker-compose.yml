@@ -2,10 +2,13 @@ version: "3.9"
 services:
   base: &base
     image: "robdmc/solarprod"
-    build: .
+    # build:
+    #   context: .
+    #   dockerfile: ./Dockerfile_base
     env_file: variables.env
     volumes:
       - ./data:/root/detector_data:delegated
+
   shell:
     <<: *base
     command: /bin/bash
