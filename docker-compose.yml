@@ -8,7 +8,6 @@ services:
     env_file: variables.env
     volumes:
       - ./data:/detector_data:delegated
-    volumes:
       - ./notebook:/notebooks:delegated
 
   shell:
