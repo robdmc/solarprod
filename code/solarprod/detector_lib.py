@@ -145,7 +145,7 @@ class NominalProd:
         prod_start_date = start_date - relativedelta(days=days_prior)
 
         # Get a list of unique homes that had production since the prod start date
-        unique_homes = get_unique_homes(prod_start_date)
+        unique_homes = list(get_unique_homes(prod_start_date))
 
         # If you want to show progress bar, wrap in tqdm
         if show_progress_bar:

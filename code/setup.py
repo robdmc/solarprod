@@ -54,7 +54,8 @@ setup(
     zip_safe=False,
     entry_points={
         'console_scripts': [
-            'bodhi.find_detections = solarprod.scripts:main'
+            'bodhi.find_detections = solarprod.scripts:find_detections',
+            'bodhi.ibis = solarprod.scripts:ibis_connection',
         ]
     }
 )
