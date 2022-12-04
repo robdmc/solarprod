@@ -24,6 +24,9 @@ def get_postgres_creds(name):
         }
     else:
         raise ValueError(f'{name} not in {allowed_names}')
+
+    if not kwargs.get('host'):
+        raise ValueError(f'No credentials for postgres connection name {name}')
     return kwargs
 
 

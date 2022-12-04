@@ -4,7 +4,7 @@ import pandas as pd
 PRODUCTION_CONN_NAME = 'production'
 ANALYITICS_CONN_NAME = 'analytics'
 LOCAL_CONN_NAME = 'local'
-LOCAL_DB_FILENAME = '/tmp/solar.ddb'
+LOCAL_DB_FILENAME = '/detector_data/solar.ddb'
 
 
 # Data plumbing stuff
