@@ -1,4 +1,6 @@
 import easier as ezr
+import ibis
+ibis.options.sql.default_limit = None
 
 from .data_plumbing import (
     sync_homeowners,

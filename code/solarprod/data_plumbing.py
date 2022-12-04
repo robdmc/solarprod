@@ -8,6 +8,8 @@ import pandas as pd
 import ibis
 from ibis import _
 
+ibis.options.sql.default_limit = None
+
 from .constants import (
     LOCAL_CONN_NAME,
     PRODUCTION_CONN_NAME,
@@ -149,8 +151,7 @@ def sync_prod_history(show_progress_bar=False, memory_friendly=True):
 
         # If you want to show progress bar, wrap in tqdm
         if show_progress_bar and memory_friendly:
-            import tqdm.notebook as tqdm
-            days = tqdm.tqdm(days)
+            days = ezr.tqdm_flex(days)
 
         # Use this branch if you don't have enough memory to hold all production
         # for all homes within the specified date ranges.

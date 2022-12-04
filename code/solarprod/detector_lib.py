@@ -149,8 +149,7 @@ class NominalProd:
 
         # If you want to show progress bar, wrap in tqdm
         if show_progress_bar:
-            import tqdm.notebook as tqdm
-            unique_homes = tqdm.tqdm(unique_homes)
+            unique_homes = ezr.tqdm_flex(unique_homes)
 
         # Loop over all producing homes
         for homeowner_id in unique_homes:

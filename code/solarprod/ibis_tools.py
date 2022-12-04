@@ -3,6 +3,8 @@ import os
 import ibis
 from . import postgres_tools as pgtools
 
+ibis.options.sql.default_limit = None
+
 from .constants import (
     PRODUCTION_CONN_NAME,
     ANALYITICS_CONN_NAME,
