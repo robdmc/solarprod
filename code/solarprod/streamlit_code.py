@@ -35,18 +35,33 @@ with get_connections('local') as conn:
     detections = conn.table('detections')
     homeowner_ids = sorted(detections[['homeowner_id']].distinct().homeowner_id.execute())
 
+TRYNG TO GET BUTTOM UPDATES SO SLIDERS
+See: https://docs.streamlit.io/knowledge-base/using-streamlit/widget-updating-session-state
+
+# def get_current_hid():
+#     return st.session_state['current_hid']
+
+
+# if 'current_hid' not in st.session_state:
+#     save_current_hid(homeowner_ids[0])
+
+# def next_home():
+#     if
+
 # st.write(homeowner_ids)
 homeowner_id = st.select_slider(
     'Homeowner ID', 
     options=homeowner_ids,
     value=homeowner_ids[0],
     help='Select the homeowner Id you want',
-    on_change=None,
+    # on_change=save_current_hid,
     args=None,
     kwargs=None,
 )
+# save_current_hid(homeowner_id)
 
 st.write(homeowner_id)
+# st.write(get_current_hid())
 
 with get_connections('local') as conn:
     nominal_prod = conn.table('nominal_prod')
