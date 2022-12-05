@@ -21,87 +21,78 @@ def display(hv_obj):
 ezr.mute_warnings()
 
 
-# @contextlib.contextmanager
-# def get_connection():
-#     file_name = '/tmp/solar.ddb'
-#     conn = ibis.duckdb.connect(file_name)
-#     try:
-#         yield conn
-#     finally:
-#         # conn.reconnect()
-#         conn.con.dispose()
 
 with get_connections('local') as conn:
     detections = conn.table('detections')
     homeowner_ids = sorted(detections[['homeowner_id']].distinct().homeowner_id.execute())
 
-TRYNG TO GET BUTTOM UPDATES SO SLIDERS
-See: https://docs.streamlit.io/knowledge-base/using-streamlit/widget-updating-session-state
+ind2hid = {ind: hid for (ind, hid) in enumerate(homeowner_ids)}
+hid2ind = {hid: ind for (ind, hid) in enumerate(homeowner_ids)}
 
-# def get_current_hid():
-#     return st.session_state['current_hid']
-
-
-# if 'current_hid' not in st.session_state:
-#     save_current_hid(homeowner_ids[0])
-
-# def next_home():
-#     if
+# See the following for how to add button control to sliders
+# See: https://docs.streamlit.io/knowledge-base/using-streamlit/widget-updating-session-state
 
 # st.write(homeowner_ids)
 homeowner_id = st.select_slider(
     'Homeowner ID', 
     options=homeowner_ids,
-    value=homeowner_ids[0],
+    # value=homeowner_ids[0],
     help='Select the homeowner Id you want',
     # on_change=save_current_hid,
     args=None,
     kwargs=None,
+    key='hid_slider'
 )
-# save_current_hid(homeowner_id)
 
-st.write(homeowner_id)
-# st.write(get_current_hid())
+
+
+
+def move_slider(delta):
+    ind = hid2ind[st.session_state.hid_slider] + delta
+    if ind < 0:
+        ind = len(homeowner_ids) - 1
+    ind = ind % len(homeowner_ids)
+
+    new_hid = ind2hid[ind]
+    st.session_state.hid_slider = new_hid
+
+
+
+col_tup = st.columns(7)
+with col_tup[0]:
+    st.button('previous', on_click=move_slider, args=(-1,),key='minus_one')
+with col_tup[1]:
+    st.button('Next', on_click=move_slider, args=(1,),key='plus_one')
+
 
 with get_connections('local') as conn:
     nominal_prod = conn.table('nominal_prod')
     nominal_prod = nominal_prod[nominal_prod.homeowner_id == homeowner_id]
     detections = conn.table('detections')
     detections = detections[detections.homeowner_id == homeowner_id]
+
+    raw_detections = conn.table('raw_detections')
+    raw_detections = raw_detections[raw_detections.homeowner_id == homeowner_id]
+
     dfd = detections.execute()
+    dfdr = raw_detections.execute()
     dfp = nominal_prod.execute()
 
+
+st.markdown(f'### Detection {hid2ind[homeowner_id]} for homeowner_id = {homeowner_id}')
 c1 = hv.Curve((dfp.date, dfp.total_production), label='Production').options(color='grey')
 c2 = hv.Curve((dfp.date, dfp.nominal_prod), label='Nominal Production').options(color='black')
-c3 = hv.Scatter((dfd.date, dfd.nominal_prod), label='Detections').options(color='red', size=10)
-ol = c1 * c2 * c3
+c3 = hv.Curve((dfp.date, dfp.baseline_nominal_prod), label='Baseline').options(color='green', alpha=.3)
+c4 = hv.Scatter((dfd.date, dfd.nominal_prod), label='Detections').options(color='red', size=10)
+c5 = hv.Scatter((dfdr.date, dfdr.nominal_prod), label='Detections').options(color='grey', size=10)
+ol = c1 * c2 * c3 * c5 *  c4
 display(ol)
 
+dfd['date'] = [str(d.date()).replace('-', '_') for d in dfd.date]
+dfdr['date'] = [str(d.date()).replace('-', '_') for d in dfdr.date]
 
-# st.table(dfd)
-# st.table(dfp)
+st.markdown('### Detections')
+st.dataframe(dfd)
 
-
-
-# options = ['a', 'b', 'c', 'd', 'e', 'f', 'h', 1, 2, 3]
-# options = list(range(1000))
-
-# st.write('hello')
-
-# with get_connection() as conn:
-#     detections = conn.table('detections')
-#     df = detections.head().execute()
-
-# st.table(df)
-    
-
-
-
-# st.select_slider(
-#     'mylabel', 
-#     options=options, value=7,
-#     help='this is help',
-#     on_change=None,
-#     args=None,
-#     kwargs=None,
-# )
+st.markdown('### Raw Detections')
+st.dataframe(dfdr)
