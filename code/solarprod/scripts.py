@@ -1,3 +1,4 @@
+import os
 import click
 from .pipelines import run_detector_pipeline
 from .constants import VALID_CONNECTION_NAMES
@@ -20,6 +21,8 @@ def ibis_connection(name):
     from IPython import embed
     from traitlets.config import get_config
     from .ibis_tools import get_connections
+    import ibis
+    from ibis import _
 
     print(name)
     with get_connections(name) as conn:
@@ -27,3 +30,12 @@ def ibis_connection(name):
         c.InteractiveShellEmbed.colors = "Linux"
         # embed(config=c)
         embed(colors="neutral")
+
+
+@click.command()
+def streamlit():
+    dir_name = os.path.dirname(__file__)
+    streamlit_file = os.path.join(dir_name, 'streamlit_code.py' )
+    print(__file__)
+    os.execv('/usr/local/bin/streamlit', ['/usr/local/bin/streamlit', 'run', streamlit_file])
+

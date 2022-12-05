@@ -56,6 +56,7 @@ setup(
         'console_scripts': [
             'bodhi.find_detections = solarprod.scripts:find_detections',
             'bodhi.ibis = solarprod.scripts:ibis_connection',
+            'bodhi.streamlit = solarprod.scripts:streamlit',
         ]
     }
 )

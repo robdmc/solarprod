@@ -33,6 +33,12 @@ services:
     working_dir: /notebooks
     command: jupyter notebook --port=8888 --NotebookApp.iopub_data_rate_limit=10000000000 --allow-root --no-browser --ip=0.0.0.0
 
+  streamlit:
+    <<: *base
+    ports:
+        - "8501:8501"
+    working_dir: /notebooks
+    command: /usr/local/bin/bodhi.streamlit
 
 
       # bash 

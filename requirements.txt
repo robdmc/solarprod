@@ -11,6 +11,7 @@ ibis-framework[duckdb]
 ibis-framework[postgres]
 ipython
 jupyter
+jupyterlab
 numpy
 pandas
 pdbpp
@@ -21,3 +22,4 @@ psycopg2
 pytest
 python-dateutil
 scipy
+streamlit
