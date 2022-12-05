@@ -55,6 +55,10 @@ def get_start_date(connection_or_connection_name, table_name, default_start_date
         if table_name in conn.list_tables():
             # Get an ibis table object
             table = conn.table(table_name)
+            
+            # Handle empty tables
+            if table.count().execute() == 0:
+                return default_start_date
 
             # Get the latest date that was pushed
             last_pushed_date = table.date.max().execute()
@@ -263,9 +267,23 @@ def get_unique_homes(start_date):
         return list(hist.homeowner_id.execute())
 
 
+# def push_detections():
+#     with get_connections(LOCAL_CONN_NAME, ANALYITICS_CONN_NAME) as (conn_local, conn_analytics):
+#         start_date = get_start_date(ANALYITICS_CONN_NAME, 'detections')
+#         if start_date is None:
+#             return
+
+#         detections = conn_local.table('detections')
+#         detections = detections[detections.date >= start_date]
+#         df = detections.execute()
+#         logger = ezr.get_logger('push_detections')
+#         logger.info(f'pushing {len(df)} detections')
+#         if not df.empty:
+#             conn_analytics.insert('detections', df)
+
 def push_detections():
-    with get_connections(LOCAL_CONN_NAME, ANALYITICS_CONN_NAME) as (conn_local, conn_analytics):
-        start_date = get_start_date(ANALYITICS_CONN_NAME, 'detections')
+    with get_connections(LOCAL_CONN_NAME, PRODUCTION_CONN_NAME) as (conn_local, conn_target):
+        start_date = get_start_date(PRODUCTION_CONN_NAME, 'low_production_detection_events')
         if start_date is None:
             return
 
@@ -275,4 +293,5 @@ def push_detections():
         logger = ezr.get_logger('push_detections')
         logger.info(f'pushing {len(df)} detections')
         if not df.empty:
-            conn_analytics.insert('detections', df)
+            print(df.dtypes)
+            conn_target.insert('low_production_detection_events', df)
