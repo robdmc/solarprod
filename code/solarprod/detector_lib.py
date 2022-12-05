@@ -250,8 +250,7 @@ class Detector(ezr.pickle_cache_mixin):
 
         # If you want to show progress bar, wrap in tqdm
         if show_progress_bar:
-            import tqdm.notebook as tqdm
-            homeowner_ids = tqdm.tqdm(homeowner_ids)
+            homeowner_ids = ezr.tqdm_flex(homeowner_ids)
 
         for homeowner_id in homeowner_ids:
             df = self.get_raw_detections_for_home(homeowner_id, start_date)
