@@ -6,6 +6,8 @@ import easier as ezr
 import holoviews as hv
 from holoviews import opts
 from solarprod.ibis_tools import get_connections
+import folium
+from streamlit_folium import st_folium
 
 
 hv.extension('bokeh')
@@ -91,8 +93,31 @@ display(ol)
 dfd['date'] = [str(d.date()).replace('-', '_') for d in dfd.date]
 dfdr['date'] = [str(d.date()).replace('-', '_') for d in dfdr.date]
 
-st.markdown('### Detections')
-st.dataframe(dfd)
+with st.expander('See Tables'):
+    st.markdown('### Detections')
+    st.dataframe(dfd)
 
-st.markdown('### Raw Detections')
-st.dataframe(dfdr)
+    st.markdown('### Raw Detections')
+    st.dataframe(dfdr)
+
+
+with st.expander('See Map'):
+    with get_connections('local') as conn:
+        neighbors = conn.table('neighbors')
+        neighbors = neighbors[neighbors.homeowner_id1 == homeowner_id]
+        owners = conn.table('homeowners')
+        joined = neighbors.join(owners, [(neighbors.homeowner_id2 == owners.homeowner_id)]).limit(100)
+
+    dfj = joined.execute()
+    if dfj.empty:
+        st.write('no neighbors')
+    else:
+        # st.dataframe(dfj)
+        mean_lat = dfj.lat.mean()
+        mean_lng = dfj.lng.mean()
+
+        m = folium.Map(location=[mean_lat, mean_lng], zoom_start=10)
+        for tup in dfj.itertuples():
+            # folium.Marker([tup.lat, tup.lng]).add_to(m)
+            folium.Circle([tup.lat, tup.lng], radius=50, color='green', tooltip=str(homeowner_id)).add_to(m)
+        st_folium(m, width=725)
